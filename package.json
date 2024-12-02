@@ -4,7 +4,8 @@
   "scripts": {
     "serve": "npx tsc -w",
     "start": "node dist/index",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,8 @@
   "homepage": "nickyadvokaat.nl",
   "devDependencies": {
     "@types/node": "^22.10.1",
-    "typescript": "^5.7.2"
+    "@vitest/coverage-istanbul": "^2.1.7",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.7"
   }
 }
