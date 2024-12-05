@@ -70,7 +70,6 @@ export class Grid<T> {
       }
       s += '\n'
     }
-    console.log(s)
   }
 }
 

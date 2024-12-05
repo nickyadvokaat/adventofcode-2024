@@ -1,3 +1,3 @@
-import day04 from './day04'
+import day05 from './day05'
 
-day04()
+day05()
