@@ -34,7 +34,7 @@ export function getSolutionPart1(
   rules: OrderRule[]
 ): number {
   return updates
-    .filter((u) => isCorrectlyOrdered(u, rules))
+    .filter((u) => isSorted(u, rules))
     .reduce((a, c) => a + getMiddleValue(c), 0)
 }
 
@@ -43,35 +43,29 @@ export function getSolutionPart2(
   rules: OrderRule[]
 ): number {
   return updates
-    .filter((u) => !isCorrectlyOrdered(u, rules))
-    .map((u) => {
-      return u.sort((a, b) => {
-        const x = rules.filter((r) => r.before === a && r.after === b)
-        const y = rules.filter((r) => r.before === b && r.after === a)
-
-        if (x.length > 0) {
-          return -1
-        } else if (y.length > 0) {
-          return 1
-        } else {
-          return 0
-        }
-      })
-    })
+    .filter((u) => !isSorted(u, rules))
+    .map((u) => sortUpdate(u, rules))
     .reduce((a, c) => a + getMiddleValue(c), 0)
 }
 
-function isCorrectlyOrdered(update: Update, rules: OrderRule[]): boolean {
-  return rules.every((r) => satisfiesRule(update, r))
+function sortUpdate(update: Update, rules: OrderRule[]): Update {
+  return update.sort((a, b) => {
+    const x = rules.filter((r) => r.before === a && r.after === b)
+    const y = rules.filter((r) => r.before === b && r.after === a)
+
+    if (x.length > 0) {
+      return -1
+    } else if (y.length > 0) {
+      return 1
+    } else {
+      return 0
+    }
+  })
 }
 
-function satisfiesRule(update: Update, rule: OrderRule): boolean {
-  const beforeIndex = update.lastIndexOf(rule.before)
-  const afterIndex = update.lastIndexOf(rule.after)
-  if (beforeIndex === -1 || afterIndex === -1) {
-    return true
-  }
-  return beforeIndex < afterIndex
+function isSorted(update: Update, rules: OrderRule[]): boolean {
+  const sorted = sortUpdate([...update], rules)
+  return sorted.every((v, i) => v === update[i])
 }
 
 function getMiddleValue(update: Update): number {
