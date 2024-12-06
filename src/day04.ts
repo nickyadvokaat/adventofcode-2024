@@ -1,5 +1,6 @@
 import { readFile } from './util/fileUtil'
-import { Direction, Grid } from './util/grid'
+import { Grid } from './util/grid'
+import { Direction } from './util/direction'
 
 export default function day04() {
   const data = readFile('04').map((s) => s.split(''))

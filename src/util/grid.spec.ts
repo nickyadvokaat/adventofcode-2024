@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { Direction, Grid } from './grid'
+import { Grid } from './grid'
+import { Direction } from './direction'
 
 const testData = [
   [1, 2, 3],

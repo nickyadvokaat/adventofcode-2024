@@ -1,17 +1,5 @@
-export type Coord = { x: number; y: number }
-
-export const Direction = {
-  N: 0,
-  NE: 1,
-  E: 2,
-  SE: 3,
-  S: 4,
-  SW: 5,
-  W: 6,
-  NW: 7,
-} as const
-
-export type Direction = (typeof Direction)[keyof typeof Direction]
+import { Coord, getStepInDirection } from './coord'
+import { Direction } from './direction'
 
 export class Grid<T> {
   private matrix: T[][]
@@ -21,15 +9,23 @@ export class Grid<T> {
   }
 
   get(x: number, y: number): T | null {
-    if (
-      x < 0 ||
-      y < 0 ||
-      x >= this.matrix.length ||
-      y >= this.matrix[0].length
-    ) {
+    if (this.isOutOfBounds({ x, y })) {
       return null
     }
     return this.matrix[x][y]
+  }
+
+  set(coord: Coord, value: T): void {
+    this.matrix[coord.x][coord.y] = value
+  }
+
+  isOutOfBounds(coord: Coord): boolean {
+    return (
+      coord.x < 0 ||
+      coord.y < 0 ||
+      coord.x >= this.matrix.length ||
+      coord.y >= this.matrix[0].length
+    )
   }
 
   getInDirection(
@@ -37,7 +33,7 @@ export class Grid<T> {
     direction: Direction,
     numberOfSteps = 1
   ): T | null {
-    const step = getStepDirection(direction)
+    const step = getStepInDirection(direction)
     return this.get(
       coord.x + step.x * numberOfSteps,
       coord.y + step.y * numberOfSteps
@@ -70,26 +66,6 @@ export class Grid<T> {
       }
       s += '\n'
     }
-  }
-}
-
-function getStepDirection(direction: Direction): Coord {
-  switch (direction) {
-    case Direction.N:
-      return { x: 0, y: -1 }
-    case Direction.NE:
-      return { x: 1, y: -1 }
-    case Direction.E:
-      return { x: 1, y: 0 }
-    case Direction.SE:
-      return { x: 1, y: 1 }
-    case Direction.S:
-      return { x: 0, y: 1 }
-    case Direction.SW:
-      return { x: -1, y: 1 }
-    case Direction.W:
-      return { x: -1, y: 0 }
-    case Direction.NW:
-      return { x: -1, y: -1 }
+    console.log(s)
   }
 }
