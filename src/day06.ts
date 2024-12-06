@@ -10,24 +10,39 @@ export default function day06() {
   const grid = new Grid(data)
   grid.transpose()
 
-  console.log(runGuardPath(grid))
+  const { moveHistory } = runGuardPath(grid)
 
-  let i = 0
-  let total = grid.find('.').length
-  let count = 0
-  grid.find('.').forEach((c) => {
-    count++
-    console.log(count + '/' + total)
+  const set = new Set<string>()
+  moveHistory
+    .map((m) => m.position)
+    .map((p) => `${p.x}-${p.y}`)
+    .forEach((s) => set.add(s))
+  console.log(set.size)
+
+  const startPosition = grid.find('^')[0]
+  let possibleObjectLocations: Coord[] = []
+  set.forEach((s) => {
+    const split = s.split('-')
+    possibleObjectLocations.push({
+      x: parseInt(split[0]),
+      y: parseInt(split[1]),
+    })
+  })
+  possibleObjectLocations = possibleObjectLocations.filter(
+    (o) => !(o.x === startPosition.x && o.y === startPosition.y)
+  )
+
+  const solutionPart2 = possibleObjectLocations.filter((c) => {
     grid.set(c, '#')
     const { didLoop } = runGuardPath(grid)
-    if (didLoop) i++
     grid.set(c, '.')
-  })
-  console.log(i)
+    return didLoop
+  }).length
+  console.log(solutionPart2)
 }
 
 function runGuardPath(grid: Grid<string>): {
-  pathLength: number
+  moveHistory: MoveHistoryItem[]
   didLoop: boolean
 } {
   let direction: Direction = Direction.N
@@ -53,11 +68,5 @@ function runGuardPath(grid: Grid<string>): {
       done = true
     }
   }
-  const set = new Set()
-  moveHistory
-    .map((m) => m.position)
-    .map((p) => `${p.x}-${p.y}`)
-    .forEach((s) => set.add(s))
-
-  return { didLoop: !grid.isOutOfBounds(position), pathLength: set.size }
+  return { didLoop: !grid.isOutOfBounds(position), moveHistory }
 }
