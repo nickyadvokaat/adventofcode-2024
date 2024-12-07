@@ -16,8 +16,6 @@ describe('Grid', () => {
     expect(grid.get(0, 2)).toBe(3)
     expect(grid.get(-1, 2)).toBe(null)
     expect(grid.get(3, 2)).toBe(null)
-
-    grid.print()
   })
 
   test('Direction', () => {
