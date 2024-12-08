@@ -34,3 +34,7 @@ export function getStepInDirection(direction: Direction): Coord {
       return { x: -1, y: -1 }
   }
 }
+
+export function distanceToCoord(from: Coord, to: Coord): Coord {
+  return { x: to.x - from.x, y: to.y - from.y }
+}

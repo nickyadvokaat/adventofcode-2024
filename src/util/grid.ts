@@ -16,7 +16,22 @@ export class Grid<T> {
   }
 
   set(coord: Coord, value: T): void {
+    if (this.isOutOfBounds(coord)) {
+      return
+    }
     this.matrix[coord.x][coord.y] = value
+  }
+
+  getUniquevalues(): T[] {
+    const result: T[] = []
+    for (let i = 0; i < this.matrix.length; i++) {
+      for (let j = 0; j < this.matrix[0].length; j++) {
+        if (!result.includes(this.matrix[i][j])) {
+          result.push(this.matrix[i][j])
+        }
+      }
+    }
+    return result
   }
 
   isOutOfBounds(coord: Coord): boolean {
