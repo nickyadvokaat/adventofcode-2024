@@ -75,7 +75,9 @@ export function diskChecksum2(data: number[]): number {
   let index = 0
   blocks.forEach((b) => {
     if (b.value !== -1) {
-      sum += b.value * ((b.repeat + index * (b.repeat + index + 1)) / 2)
+      for (let i = 0; i < b.repeat; i++) {
+        sum += b.value * (i + index)
+      }
     }
     index += b.repeat
   })
