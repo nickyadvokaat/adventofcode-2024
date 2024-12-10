@@ -1,9 +1,9 @@
 {
   "name": "adventofcode-2024",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "serve": "npx tsc -w",
-    "start": "node dist/index",
+    "start": "npx vite-node src/index.ts",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "format": "prettier --write ."
@@ -20,6 +20,7 @@
     "@vitest/coverage-istanbul": "^2.1.7",
     "prettier": "^3.4.1",
     "typescript": "^5.7.2",
+    "vite-node": "^2.1.8",
     "vitest": "^2.1.7"
   }
 }
