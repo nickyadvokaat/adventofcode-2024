@@ -15,6 +15,13 @@ export class Grid<T> {
     return this.matrix[x][y]
   }
 
+  getCoord(c: Coord): T | null {
+    if (this.isOutOfBounds(c)) {
+      return null
+    }
+    return this.matrix[c.x][c.y]
+  }
+
   set(coord: Coord, value: T): void {
     if (this.isOutOfBounds(coord)) {
       return
