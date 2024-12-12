@@ -74,6 +74,17 @@ export class Grid<T> {
     return result
   }
 
+  first(value: T): Coord | null {
+    for (let i = 0; i < this.matrix.length; i++) {
+      for (let j = 0; j < this.matrix[0].length; j++) {
+        if (this.matrix[i][j] === value) {
+          return { x: i, y: j }
+        }
+      }
+    }
+    return null
+  }
+
   transpose() {
     this.matrix = this.matrix[0].map((_, colIndex) =>
       this.matrix.map((row) => row[colIndex])
