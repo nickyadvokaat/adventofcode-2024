@@ -91,6 +91,10 @@ export class Grid<T> {
     )
   }
 
+  getDim() {
+    return { x: this.matrix.length, y: this.matrix[0].length }
+  }
+
   print() {
     let s = ''
     for (let i = 0; i < this.matrix.length; i++) {
