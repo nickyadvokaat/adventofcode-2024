@@ -9,7 +9,7 @@ describe('Day13', () => {
     expect(calculateTokensToWinPrizes(data)).toBe(40069)
   })
 
-  test('Part 1', () => {
+  test('Part 2', () => {
     expect(calculateTokensToWinPrizes(data, true)).toBe(71493195288102)
   })
 })
