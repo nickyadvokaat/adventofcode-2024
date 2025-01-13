@@ -65,7 +65,8 @@ export function part1(data: number[], steps = 2000): number {
 }
 
 function step(n: number): number {
-  n = (n ^ ((n * 64) >>> 0)) % 16777216
-  n = n ^ Math.floor(n / 32) % 16777216
-  return ((n ^ (n * 2048)) >>> 0) % 16777216
+  const mask = 16777216 - 1
+  n = (n ^ (n << 6)) & mask
+  n = (n ^ (n >> 5)) & mask
+  return (n ^ (n << 11)) & mask
 }
