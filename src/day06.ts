@@ -6,46 +6,45 @@ import { Coord, getCoordInDirection } from './util/coord'
 type MoveHistoryItem = { direction: Direction; position: Coord }
 
 export default function day06() {
-  const data = readFile('06').map((s) => s.split(''))
-  const tempGrid = new Grid(data)
-  tempGrid.transpose()
-  const startPosition = tempGrid.find('^')[0]
+  const { grid, startPosition } = transformData(readFile('06'))
 
-  const grid = new Grid(data.map((a) => a.map((s) => s === '#')))
-  grid.transpose()
-
-  const { moveHistory } = runGuardPath(grid, startPosition)
-  const set = new Set<string>()
-  moveHistory
-    .map((m) => m.position)
-    .map((p) => `${p.x}-${p.y}`)
-    .forEach((s) => set.add(s))
-  console.log(set.size)
-
-  let possibleObjectLocations: Coord[] = []
-  set.forEach((s) => {
-    const split = s.split('-')
-    possibleObjectLocations.push({
-      x: parseInt(split[0]),
-      y: parseInt(split[1]),
-    })
-  })
-  possibleObjectLocations = possibleObjectLocations.filter(
-    (o) => !(o.x === startPosition.x && o.y === startPosition.y)
-  )
-
-  const solutionPart2 = possibleObjectLocations.filter((c) => {
-    grid.set(c, true)
-    const { didLoop } = runGuardPath(grid, startPosition)
-    grid.set(c, false)
-    return didLoop
-  }).length
-  console.log(solutionPart2)
+  console.log('Part 1', distinctPositionsVisited(grid, startPosition).length)
+  console.log('Part 2', obstructionPositions(grid, startPosition).length)
 }
 
-function runGuardPath(
+export function transformData(data: string[]): {
+  grid: Grid<boolean>
+  startPosition: Coord
+} {
+  const data2 = data.map((s) => s.split(''))
+  const tempGrid = new Grid(data2)
+  tempGrid.transpose()
+  const startPosition = tempGrid.find('^')[0]
+  const grid = new Grid(data2.map((a) => a.map((s) => s === '#')))
+  grid.transpose()
+  return { grid, startPosition }
+}
+
+export function distinctPositionsVisited(
   grid: Grid<boolean>,
-  position: Coord
+  startPosition: Coord
+): Coord[] {
+  const { moveHistory } = runGuardPath(grid, startPosition)
+
+  const result: Coord[] = []
+  moveHistory
+    .map((m) => m.position)
+    .forEach((p) => {
+      if (!result.some((r) => r.x === p.x && r.y === p.y)) {
+        result.push(p)
+      }
+    })
+  return result
+}
+
+export function runGuardPath(
+  grid: Grid<boolean>,
+  startPosition: Coord
 ): {
   moveHistory: MoveHistoryItem[]
   didLoop: boolean
@@ -53,23 +52,37 @@ function runGuardPath(
   let direction: Direction = Direction.N
   let moveHistory: MoveHistoryItem[] = []
   while (true) {
-    moveHistory.push({ direction: direction, position: position })
-    if (grid.getInDirection(position, direction) === true) {
+    moveHistory.push({ direction: direction, position: startPosition })
+    if (grid.getInDirection(startPosition, direction) === true) {
       direction = DirectionToRight(direction)
     } else {
-      position = getCoordInDirection(position, direction)
+      startPosition = getCoordInDirection(startPosition, direction)
     }
     if (
-      grid.isOutOfBounds(position) ||
+      grid.isOutOfBounds(startPosition) ||
       moveHistory.some(
         (item) =>
-          item.position.x === position.x &&
-          item.position.y === position.y &&
+          item.position.x === startPosition.x &&
+          item.position.y === startPosition.y &&
           item.direction === direction
       )
     ) {
       break
     }
   }
-  return { didLoop: !grid.isOutOfBounds(position), moveHistory }
+  return { didLoop: !grid.isOutOfBounds(startPosition), moveHistory }
+}
+
+export function obstructionPositions(
+  grid: Grid<boolean>,
+  startPosition: Coord
+): Coord[] {
+  return distinctPositionsVisited(grid, startPosition)
+    .filter((o) => !(o.x === startPosition.x && o.y === startPosition.y))
+    .filter((c) => {
+      grid.set(c, true)
+      const { didLoop } = runGuardPath(grid, startPosition)
+      grid.set(c, false)
+      return didLoop
+    })
 }
