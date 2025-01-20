@@ -1,14 +1,8 @@
 import { readFile } from './util/fileUtil'
 
 export default function day07() {
-  const data = readFile('07-t')
-  const sums = data.map((s) => parseInt(s.split(':')[0]))
-  const values = data.map((s) =>
-    s
-      .split(': ')[1]
-      .split(' ')
-      .map((i) => parseInt(i))
-  )
+  const { sums, values } = transformData(readFile('07-t'))
+
   let solution = 0
   for (let i = 0; i < values.length; i++) {
     if (findCalibrationRecursive(sums[i], values[i])) {
@@ -16,6 +10,20 @@ export default function day07() {
     }
   }
   console.log(solution)
+}
+
+export function transformData(data: string[]): {
+  sums: number[]
+  values: number[][]
+} {
+  const sums = data.map((s) => parseInt(s.split(':')[0]))
+  const values = data.map((s) =>
+    s
+      .split(': ')[1]
+      .split(' ')
+      .map((i) => parseInt(i))
+  )
+  return { sums, values }
 }
 
 export function findCalibrationRecursive(
