@@ -1,5 +1,5 @@
 # Advent of Code 2024
-[![Run tests](https://github.com/nickyadvokaat/adventofcode-2024/actions/workflows/main.yml/badge.svg)](https://github.com/nickyadvokaat/adventofcode-2024/actions/workflows/main.yml)
+[![Vitest](https://github.com/nickyadvokaat/adventofcode-2024/actions/workflows/main.yml/badge.svg)](https://github.com/nickyadvokaat/adventofcode-2024/actions/workflows/main.yml)
 
 My solutions for [aoc2024](https://adventofcode.com/2024) written in TypeScript
 
