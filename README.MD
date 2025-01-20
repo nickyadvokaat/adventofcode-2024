@@ -11,12 +11,6 @@ Install dependencies:
 npm install
 ```
 
-Compile TypeScript:
-
-```bash
-npm run serve
-```
-
 Run:
 
 ```bash
