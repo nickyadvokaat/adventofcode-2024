@@ -4,42 +4,95 @@ import { Direction } from './util/direction'
 import { Coord, getCoordInDirection } from './util/coord'
 
 export default function day12() {
-  const data = readFile('12').map((s) => s.split(''))
-  const grid = new Grid<string>(data)
-  grid.transpose()
-  grid.print()
-  const arr = Array<Array<boolean>>(data.length).fill(
-    Array<boolean>(data[0].length).fill(false)
-  )
-  const checkGrid = new Grid<boolean>(arr)
-  checkGrid.transpose()
-
-  let sum = 0
-  while (checkGrid.first(false) !== null) {
-    const coord = checkGrid.first(false)!
-    const result = checkRecursive(coord, grid, checkGrid)
-    sum += result.perimeter * result.area
-  }
-  console.log(sum)
+  const data = readFile('12')
+  const grid = transformData(data)
+  console.log(getFencingPrice(grid))
+  console.log(getFencingPrice(grid, true))
 }
 
-function checkRecursive(
+export function transformData(data: string[]): Grid<string> {
+  const grid = new Grid<string>(data.map((s) => s.split('')))
+  grid.transpose()
+  return grid
+}
+
+export function getFencingPrice(grid: Grid<string>, isPart2 = false): number {
+  const dim = grid.getDim()
+  const checkGrid = new Grid<boolean>(
+    Array<Array<boolean>>(dim.x).fill(Array<boolean>(dim.y).fill(false))
+  )
+  checkGrid.transpose()
+  let fencingPrice = 0
+  while (checkGrid.first(false) !== null) {
+    const startCoord = checkGrid.first(false)!
+    if (!isPart2) {
+      const result = checkRegionRecursive(startCoord, grid, checkGrid)
+      fencingPrice += result.perimeter * result.area
+    } else {
+      const value = grid.getCoord(startCoord)
+      const regionCoords = getRegion(startCoord, grid, checkGrid)
+      let cornersInRegion = 0
+      regionCoords.forEach((c) => {
+        for (let direction: Direction = 0; direction < 8; direction += 2) {
+          const p1 = grid.getInDirection(c, direction as Direction) === value
+          const p2 =
+            grid.getInDirection(c, ((direction + 1) % 8) as Direction) === value
+          const p3 =
+            grid.getInDirection(c, ((direction + 2) % 8) as Direction) === value
+          if ((p1 && !p2 && p3) || (!p1 && !p3)) {
+            cornersInRegion++
+          }
+        }
+      })
+      fencingPrice += regionCoords.length * cornersInRegion
+    }
+  }
+  return fencingPrice
+}
+
+function getRegion(
   coord: Coord,
+  grid: Grid<string>,
+  checkGrid: Grid<boolean>
+): Coord[] {
+  const value = grid.getCoord(coord)
+  checkGrid.set(coord, true)
+  let regionCoords: Coord[] = [coord]
+  let addedCoords: Coord[] = [coord]
+  while (addedCoords.length > 0) {
+    let newAdded = []
+    for (let addedCoord of addedCoords) {
+      for (let direction: Direction = 0; direction < 8; direction += 2) {
+        const c = getCoordInDirection(addedCoord, direction as Direction)
+        if (grid.getCoord(c) === value && checkGrid.getCoord(c) === false) {
+          newAdded.push(c)
+          checkGrid.set(c, true)
+        }
+      }
+    }
+    addedCoords = newAdded
+    addedCoords.forEach((c) => regionCoords.push(c))
+  }
+  return regionCoords
+}
+
+function checkRegionRecursive(
+  startCoord: Coord,
   grid: Grid<string>,
   checkGrid: Grid<boolean>
 ): {
   area: number
   perimeter: number
 } {
-  if (checkGrid.getCoord(coord)) {
+  if (checkGrid.getCoord(startCoord)) {
     return { area: 0, perimeter: 0 }
   }
-  checkGrid.set(coord, true)
-  const value = grid.getCoord(coord)
+  checkGrid.set(startCoord, true)
+  const value = grid.getCoord(startCoord)
   let around: Coord[] = []
   let perimeter = 4
   for (let direction: Direction = 0; direction < 8; direction += 2) {
-    const c = getCoordInDirection(coord, direction as Direction)
+    const c = getCoordInDirection(startCoord, direction as Direction)
     if (grid.getCoord(c) === value) {
       perimeter -= 1
       if (checkGrid.getCoord(c) === false) {
@@ -49,7 +102,7 @@ function checkRecursive(
   }
   return around
     .map((a) => {
-      return checkRecursive(a, grid, checkGrid)
+      return checkRegionRecursive(a, grid, checkGrid)
     })
     .reduce(
       (a, b) => {
